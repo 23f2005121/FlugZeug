@@ -27,6 +27,7 @@ OVERRIDE = {"OCN":"Discover Airlines","EJU":"easyJet","EZY":"easyJet","EZS":"eas
             "BCS":"DHL (EAT Leipzig)","BOX":"AeroLogic","DHK":"DHL Air UK","ABR":"ASL Airlines"}
 name_map.update(OVERRIDE)
 LH_GROUP = {"DLH","CLH","EWG","GEC","DLA","OCN","BEL","SWR","AUA"}
+CARGO_OPS = {"GEC","BCS","BOX","DHK","ABR"}  # dedicated freight operators, for a cargo-vs-cargo night comparison
 
 def coords(icao):
     if icao in ap.index:
@@ -128,6 +129,20 @@ for a in ORDER:
     sub=df[df.home==a]
     night=sub[(sub.hour>=23)|(sub.hour<5)]
     print(f"  {NAMES[a]:10s}: {len(night):4d}/{len(sub):4d} = {100*len(night)/len(sub):5.1f}%")
+
+# Leipzig's overall night share is confounded by its cargo-heavy traffic mix, so
+# isolate cargo carriers specifically and compare their night share head-to-head
+# across airports (does the ban suppress cargo too, or only passenger flights?).
+print("\nCARGO-ONLY night share (fair comparison, isolates traffic-mix confound):")
+df["is_cargo"] = df["al_icao"].isin(CARGO_OPS)
+df["is_night"] = (df.hour>=23)|(df.hour<5)
+for a in ORDER:
+    sub=df[df.home==a]
+    cargo, noncargo = sub[sub.is_cargo], sub[~sub.is_cargo]
+    cargo_share = f"{100*cargo.is_night.mean():5.1f}%" if len(cargo) else "  n/a"
+    print(f"  {NAMES[a]:10s}: cargo n={len(cargo):3d}  cargo_night={cargo_share}  "
+          f"non-cargo_night={100*noncargo.is_night.mean():5.1f}%")
+
 print("\ntrue long-haul (>4000 km) share of movements:")
 for a in ORDER:
     s=df[df.home==a]; lh=(s["dist_km"]>4000).sum()

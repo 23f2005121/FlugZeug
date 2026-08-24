@@ -4,7 +4,9 @@ Analysing one day of real air traffic at **Frankfurt (EDDF)**, **Munich (EDDM)**
 
 > **Germany bans night flights at its big passenger hubs to protect residents from noise. Does that eliminate night aviation — or just relocate it?**
 
-It relocates it. Frankfurt, Munich and Berlin go essentially dark from 23:00 to 05:00 by law. Leipzig/Halle — Germany's round-the-clock cargo hub and DHL's European base — does **43% of its daily traffic in that exact window**, because nothing stops it from doing so. The ban doesn't reduce night flying, it moves it to the one airport allowed to do it.
+It relocates it. Frankfurt, Munich and Berlin go essentially dark from 23:00 to 05:00 by law. Leipzig/Halle — Germany's round-the-clock cargo hub and DHL's European base — does **43% of its daily traffic in that exact window**, because nothing stops it from doing so.
+
+That raw comparison alone isn't proof, though — Leipzig is 65% cargo by traffic mix, so a higher *overall* night share could just mean "cargo naturally flies more at night," independent of any ban. The stronger test is **cargo against cargo**: Lufthansa Cargo's night share at Frankfurt is **2.9%** — statistically indistinguishable from Frankfurt's passenger traffic (0.9%) — and Berlin has **no dedicated freight carrier at all**. The same class of operator that gets suppressed to near-zero at the passenger hubs runs **61% of its Leipzig movements at night**. The ban isn't just correlated with where cargo ends up; it visibly suppresses cargo specifically at every airport that has one, and Leipzig is the one place that doesn't.
 
 ---
 
@@ -27,18 +29,18 @@ It relocates it. Frankfurt, Munich and Berlin go essentially dark from 23:00 to 
 
 Based on **2,985 aircraft movements** across the four airports on **19 August 2026** (a normal weekday).
 
-| Airport | Movements | Night share (23:00–05:00) | Top operator | Lufthansa Group |
+| Airport | Movements | Overall night share | **Cargo-only night share** | Lufthansa Group |
 |---|--:|--:|--:|--:|
-| Frankfurt (EDDF) | 1,289 | 0.9% | Lufthansa (46%) | 58.0% |
-| Munich (EDDM) | 936 | 1.5% | Lufthansa (47%) | 59.5% |
-| Berlin (EDDB) | 540 | 1.3% | Ryanair (14%) | 21.5% |
-| **Leipzig (EDDP)** | 220 | **43.2%** | **DHL / EAT Leipzig (47%)** | 5.0% |
+| Frankfurt (EDDF) | 1,289 | 0.9% | 2.9% (n=34) | 58.0% |
+| Munich (EDDM) | 936 | 1.5% | 16.7% (n=6, too thin to lean on) | 59.5% |
+| Berlin (EDDB) | 540 | 1.3% | no dedicated cargo carrier | 21.5% |
+| **Leipzig (EDDP)** | 220 | 43.2% | **61.1% (n=144)** | 5.0% |
 
-1. **The night ban doesn't remove night flying — it concentrates it at Leipzig.** Frankfurt, Munich and Berlin fall to under 1.5% of their traffic in the banned window; Leipzig runs **43.2%** of its whole day inside it. Leipzig has no passenger-noise curfew, so it's where Germany's night-time air cargo physically lives. This is the reason DHL built its European hub there instead of at a bigger, more central passenger airport.
-2. **Leipzig isn't a small version of the other three — it's a different business.** Its top "airline" is DHL's own EAT Leipzig operation (47% of movements), Lufthansa Group is nearly absent (5%), and its rhythm is inverted: quiet in the afternoon, busy overnight. Same country, same aviation law, completely different airport because the ban makes night operation a scarce resource that one place monopolises.
+1. **Cargo carriers are suppressed at every airport that has a night ban — and free to fly at night only at the one that doesn't.** Lufthansa Cargo's night share at Frankfurt (2.9%) is barely different from Frankfurt's passenger traffic (0.9%); Berlin has no dedicated freight operator to even measure. The same class of operator runs 61% of its movements at night at Leipzig, which has no curfew. That's a like-for-like comparison, not just "Leipzig happens to be cargo-heavy and cargo flies at night anyway."
+2. **Leipzig isn't a small version of the other three — it's a different business.** It's 65% cargo by traffic mix (vs 0–3% at the passenger hubs), its top "airline" is DHL's own EAT Leipzig operation, Lufthansa Group is nearly absent (5%), and its daily rhythm is inverted: quiet in the afternoon, busiest overnight.
 3. **Among the passenger hubs, Lufthansa dominates where it builds a hub and competes where it doesn't.** At Frankfurt and Munich the Lufthansa Group runs ~58–60% of movements; at point-to-point, low-cost Berlin it runs just 21%, led instead by Ryanair and easyJet. All three still share the same curfew — the ban is not what separates them.
 
-**In one line:** *A noise law written to stop night flights doesn't stop them — it relocates them entirely onto the one German airport with no such restriction, and that airport is now effectively DHL's overnight hub.*
+**In one line:** *A noise law written to stop night flights doesn't stop them — cargo carriers get suppressed just as hard as passenger flights at every airport the ban covers, and relocate entirely to the one German airport it doesn't.*
 
 ---
 
@@ -48,6 +50,8 @@ Based on **2,985 aircraft movements** across the four airports on **19 August 20
 Frankfurt, Munich and Berlin collapse to near-zero overnight. Leipzig does the opposite — it's busiest exactly when the others are shut.
 
 ![Hourly aircraft movements at the four airports, with the 23:00–05:00 night ban shaded](chart1_rhythm.png)
+
+> This chart plots *all* traffic, so Leipzig's night bump is partly just its cargo-heavy mix. The causal evidence — cargo carriers specifically getting suppressed at the passenger hubs but not at Leipzig — is the cargo-only comparison in [Key findings](#key-findings), reproduced by `enrich_analyze.py`'s printed summary.
 
 ### Whose airport is it?
 Lufthansa Group carriers (blue) dominate Frankfurt and Munich, barely register at Berlin (led by low-cost carriers), and are essentially absent from Leipzig — which is DHL's operation, not a passenger airline's.
@@ -84,6 +88,7 @@ Authenticates to OpenSky (OAuth2), pulls a full day of departures and arrivals f
 - Derives each movement's **hour** (local time), the **other endpoint** airport, and its **direction**.
 - Joins **airline** from the callsign prefix (ICAO code → name), with explicit hand corrections and a stated **Lufthansa Group** definition (`DLH, CLH, EWG, GEC, DLA, OCN, BEL, SWR, AUA`) and DHL/cargo operator overrides for Leipzig (`BCS, BOX, DHK, ABR`).
 - Joins the other airport's **country, continent, and coordinates**, then classifies **reach** (Domestic / Europe / Intercontinental) and computes **great-circle distance**.
+- Flags dedicated **cargo operators** (`GEC, BCS, BOX, DHK, ABR`) and prints their night share per airport separately from passenger traffic — the fair, like-for-like comparison behind the headline finding, since Leipzig's overall night share is confounded by its cargo-heavy traffic mix.
 - Produces the three charts, a `flights_enriched.csv`, and a `routes_for_kepler.csv` for the 3D map.
 
 ---
@@ -153,6 +158,7 @@ The result is all four airports throwing arcs across a 3D globe — Frankfurt's 
 
 - **Coverage:** OpenSky is crowd-sourced from volunteer ground receivers, so a small share of flights can be missing, and a portion of movements had no confidently geolocatable other-airport. A few extreme distance values are estimation artefacts.
 - **One day:** this is a single weekday snapshot, not a seasonal or annual average — Leipzig's night share in particular can vary with cargo demand.
+- **Thin cargo samples at the passenger hubs:** Frankfurt's cargo-only night share (2.9%) rests on 34 flights, which is enough for a same-day read; Munich's (16.7%) rests on just 6 and shouldn't be leaned on alone. Berlin had zero identifiable cargo-carrier movements — itself informative (no dedicated freight presence to suppress), but it means the comparison is really "Frankfurt cargo vs Leipzig cargo," not a four-way average.
 - **No economics:** flight-movement data shows *what flies*, not revenue, prices, passengers, or profit. Any competitive-economics reading here is a **hypothesis to test with other data**, not a proven claim.
 - **Airline labels:** derived from crowd-sourced references; a small "unmatched" bucket is left honestly unlabelled rather than guessed.
 
