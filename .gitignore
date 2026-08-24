@@ -1,0 +1,7 @@
+credentials.json
+flights_raw.csv
+airports.csv
+airlines.dat
+__pycache__/
+*.pyc
+.DS_Store

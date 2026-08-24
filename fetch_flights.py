@@ -1,19 +1,21 @@
 
 import os
 import csv
+import json
 import time
 import requests
 from datetime import datetime
-from zoneinfo import ZoneInfo   
+from zoneinfo import ZoneInfo
 
 # ---- Config -----------------------------------------------------------------
-DATE = "2026-08-19"                
-TZ = ZoneInfo("Europe/Berlin")     
+DATE = "2026-08-19"
+TZ = ZoneInfo("Europe/Berlin")
 
 AIRPORTS = {
     "EDDF": "Frankfurt",
     "EDDM": "Munich",
     "EDDB": "Berlin Brandenburg",
+    "EDDP": "Leipzig/Halle",
 }
 
 TOKEN_URL = ("https://auth.opensky-network.org/auth/realms/"
@@ -23,15 +25,26 @@ OUT_FILE = "flights_raw.csv"
 # -----------------------------------------------------------------------------
 
 
-def get_token():
+def load_credentials():
     cid = os.environ.get("OPENSKY_CLIENT_ID")
     secret = os.environ.get("OPENSKY_CLIENT_SECRET")
-    if not cid or not secret:
+    if not (cid and secret):
+        try:
+            with open("credentials.json") as fh:
+                creds = json.load(fh)
+            cid, secret = creds.get("client_id"), creds.get("client_secret")
+        except FileNotFoundError:
+            pass
+    if not (cid and secret):
         raise SystemExit(
             "Missing credentials. Set OPENSKY_CLIENT_ID and "
-            "OPENSKY_CLIENT_SECRET first (create an API client in your "
-            "OpenSky account)."
+            "OPENSKY_CLIENT_SECRET, or create credentials.json (see README)."
         )
+    return cid, secret
+
+
+def get_token():
+    cid, secret = load_credentials()
     r = requests.post(
         TOKEN_URL,
         data={
