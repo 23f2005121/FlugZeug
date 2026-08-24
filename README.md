@@ -4,8 +4,6 @@ Analysing a single day of real air traffic at **Frankfurt (EDDF)**, **Munich (ED
 
 > **What does one ordinary day of flights reveal about how Germany's major airports actually work, and how Lufthansa competes at them?**
 
-The analysis is built end to end from self-extracted data: pull → clean → enrich → analyse → visualise. No pre-made dataset, no delay/passenger figures assumed — only what flight-movement data can honestly show.
-
 ---
 
 ## Table of contents
@@ -69,8 +67,6 @@ Mostly Europe everywhere; Frankfurt has the largest intercontinental share.
 | **[OpenSky Network](https://opensky-network.org/)** | Flight movements (departures + arrivals) | Free for non-commercial/research use. ADS-B tracking data — **no schedules, delays, or passenger/revenue figures.** OAuth2 client-credentials auth. |
 | **[OurAirports](https://ourairports.com/)** | Airport → country, continent, coordinates | Public-domain reference data. |
 | **[OpenFlights](https://openflights.org/data.html)** | Airline ICAO code → name | Community reference data (with hand corrections for a few stale/mislabelled entries). |
-
-**Why not Flightradar24?** A consumer FR24 subscription has no bulk API and its data isn't for redistribution — it's great for a per-flight 3D visual (KML → Google Earth) but not for programmatic extraction, which is the skill this project is meant to show.
 
 ---
 
@@ -147,15 +143,6 @@ Open [kepler.gl/demo](https://kepler.gl/demo), drag in `routes_for_kepler.csv`, 
 - **Height / weight by:** `flights`
 
 The result is Frankfurt, Munich and Berlin throwing arcs across a 3D globe — Frankfurt's worldwide reach obvious next to Berlin's tight European cluster.
-
----
-
-## Limitations
-
-- **Coverage:** OpenSky is crowd-sourced from volunteer ground receivers, so a small share of flights can be missing, and ~17% of movements had no confidently geolocatable other-airport. A few extreme distance values are estimation artefacts.
-- **One day:** this is a single weekday snapshot, not a seasonal or annual average.
-- **No economics:** flight-movement data shows *what flies*, not revenue, prices, passengers, or profit. Any competitive-economics reading here is a **hypothesis to test with other data**, not a proven claim.
-- **Airline labels:** derived from crowd-sourced references; a small "unmatched" bucket is left honestly unlabelled rather than guessed.
 
 ---
 
