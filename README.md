@@ -13,6 +13,7 @@ That raw comparison alone isn't proof, though — Leipzig is 65% cargo by traffi
 ## Table of contents
 - [Key findings](#key-findings)
 - [Results](#results)
+- [Extension: does the ban show up in total volume history?](#extension-does-the-ban-show-up-in-total-volume-history)
 - [Data sources](#data-sources)
 - [How it works](#how-it-works)
 - [Repository structure](#repository-structure)
@@ -67,6 +68,18 @@ All four are similarly Europe-heavy by destination count; the ban's effect shows
 
 ---
 
+## Extension: does the ban show up in total volume history?
+
+A natural follow-up question: if the night ban really redistributes traffic, shouldn't the *year the ban started* show up as a dent in each airport's total movement history? Frankfurt's ban began October 2011 (permanent from April 2012); Munich's core restriction was formalised in 2001, on top of limits already in place when the airport opened in 1992.
+
+This needs a different data source. OpenSky's usable ADS-B coverage only goes back to roughly 2016–2017, over a decade after either date — so this part uses each airport's own **official annual traffic statistics** instead (`historical_volume.py`, sourced from Fraport's and Munich Airport's own statistical yearbooks — see [Data sources](#data-sources)).
+
+![Annual aircraft movements at Frankfurt and Munich, 1992–2023, with each airport's night-ban year marked](chart4_historical_volume.png)
+
+**There's no visible dip at either ban date** — and that's actually consistent with the main finding, not a contradiction of it. Munich's movements grew every year through 2001–2003 despite the ban and despite 9/11 hitting global aviation in the same window; Frankfurt's grew **4.9%** in 2011, the year the ban started, because a new runway opened the same year and added capacity. A night ban restricts *when* an airport can fly, not *how much* — so annual totals were never the right place to look for its effect. That's exactly why the cargo-vs-cargo comparison above (which looks at the hourly *distribution* of a same-day snapshot, not annual totals) is the real evidence, and why this extension is presented as a documented dead end rather than a second proof point.
+
+---
+
 ## Data sources
 
 | Source | Used for | Notes |
@@ -74,6 +87,8 @@ All four are similarly Europe-heavy by destination count; the ban's effect shows
 | **[OpenSky Network](https://opensky-network.org/)** | Flight movements (departures + arrivals) | Free for non-commercial/research use. ADS-B tracking data — **no schedules, delays, or passenger/revenue figures.** OAuth2 client-credentials auth. |
 | **[OurAirports](https://ourairports.com/)** | Airport → country, continent, coordinates | Public-domain reference data. |
 | **[OpenFlights](https://openflights.org/data.html)** | Airline ICAO code → name | Community reference data (with hand corrections for a few stale/mislabelled entries, including DHL's Leipzig operators). |
+| **[Fraport annual statistical report](https://www.fraport.com/content/dam/fraport-company/documents/investoren/finanz--und-verkehrszahlen/luftverkehrsstatistik/23219_D_Statistischer_Jahresbericht_2023_Final.pdf)** | Frankfurt annual movements, 1999–2023 | Official Fraport AG figures, hand-transcribed into `historical_volume.py`. Used only for the volume-history extension, not the main analysis. |
+| **[Munich Airport traffic figures](https://de.wikipedia.org/wiki/Verkehrszahlen_des_Flughafens_München)** | Munich annual movements, 1992–2023 | Compiled from Flughafen München GmbH's own annual reports; hand-transcribed into `historical_volume.py`. |
 
 ---
 
@@ -99,6 +114,7 @@ Authenticates to OpenSky (OAuth2), pulls a full day of departures and arrivals f
 .
 ├── fetch_flights.py          # Stage 1: pull raw movements from OpenSky
 ├── enrich_analyze.py         # Stage 2: clean, enrich, analyse, plot
+├── historical_volume.py      # Extension: official annual volume, FRA + MUC (separate data source)
 ├── credentials.json          # your OpenSky client_id/secret  (gitignored!)
 ├── airports.csv              # OurAirports reference (downloaded)
 ├── airlines.dat               # OpenFlights reference (downloaded)
@@ -107,7 +123,8 @@ Authenticates to OpenSky (OAuth2), pulls a full day of departures and arrivals f
 ├── routes_for_kepler.csv     # arc data for the 3D map
 ├── chart1_rhythm.png         # hourly traffic + night ban (the centerpiece)
 ├── chart2_reach.png          # reach split
-└── chart3_airlines.png       # airline concentration
+├── chart3_airlines.png       # airline concentration
+└── chart4_historical_volume.png  # annual volume history, 1992-2023
 ```
 
 ---
