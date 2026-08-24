@@ -6,8 +6,6 @@ Analysing one day of real air traffic at **Frankfurt (EDDF)**, **Munich (EDDM)**
 
 It relocates it. Frankfurt, Munich and Berlin go essentially dark from 23:00 to 05:00 by law. Leipzig/Halle — Germany's round-the-clock cargo hub and DHL's European base — does **43% of its daily traffic in that exact window**, because nothing stops it from doing so. The ban doesn't reduce night flying, it moves it to the one airport allowed to do it.
 
-The analysis is built end to end from self-extracted data: pull → clean → enrich → analyse → visualise. No pre-made dataset, no delay/passenger figures assumed — only what flight-movement data can honestly show.
-
 ---
 
 ## Table of contents
@@ -72,8 +70,6 @@ All four are similarly Europe-heavy by destination count; the ban's effect shows
 | **[OpenSky Network](https://opensky-network.org/)** | Flight movements (departures + arrivals) | Free for non-commercial/research use. ADS-B tracking data — **no schedules, delays, or passenger/revenue figures.** OAuth2 client-credentials auth. |
 | **[OurAirports](https://ourairports.com/)** | Airport → country, continent, coordinates | Public-domain reference data. |
 | **[OpenFlights](https://openflights.org/data.html)** | Airline ICAO code → name | Community reference data (with hand corrections for a few stale/mislabelled entries, including DHL's Leipzig operators). |
-
-**Why not Flightradar24?** A consumer FR24 subscription has no bulk API and its data isn't for redistribution — it's great for a per-flight 3D visual (KML → Google Earth) but not for programmatic extraction, which is the skill this project is meant to show.
 
 ---
 
